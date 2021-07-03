@@ -2,6 +2,10 @@
 
 /mysql-data/*
 
+/logs/nginx/access.log
+/logs/nginx/application.access.log
+/logs/nginx/error.log
+
 # composer
 /composer.phar
 /vendor
@@ -13,3 +17,5 @@
 
 # System files
 .DS_Store
+/.buildpath
+/.project
