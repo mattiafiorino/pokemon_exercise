@@ -19,4 +19,4 @@
 .phpunit.result.cache
 ###< phpunit/phpunit ###
 /composer.lock
-/public/images/*
+/public/images/pokemon/*.png

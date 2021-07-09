@@ -3,7 +3,6 @@ namespace App\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use App\Entity\Pokemon;
 
 class PokemonService {
     
@@ -17,26 +16,25 @@ class PokemonService {
         $this->em = $em;
     }  
     
-    public function newPokemon($team): Pokemon
+    public function newPokemon(): array
     {
+        $result = array();
         $randPokemon = $this->getRandomPokemon();
         
-        $pokemon = new Pokemon();
-        $pokemon->setName($randPokemon['name']);
-        $pokemon->setBaseExp($randPokemon['base_experience']);
-        
-        $filename = __DIR__."/../../public/images/pokemon/".$randPokemon['id'].".png";
-        if(!file_exists($filename)){
-            file_put_contents($filename, file_get_contents($randPokemon['sprites']['front_default']));
+        $result['id'] = $randPokemon['id'];
+        $result['name'] = $randPokemon['name'];
+        $result['baseExp'] = $randPokemon['base_experience'];
+        $result['image'] = $randPokemon['sprites']['front_default'];
+        $result['abilities'] = array();
+        $result['types'] = array();
+        foreach($randPokemon['abilities'] as $ability){
+            $result['abilities'][] = $ability['ability']['name'];
+        }
+        foreach($randPokemon['types'] as $ability){
+            $result['types'][] = $ability['type']['name'];
         }
         
-        $pokemon->setImagePath("http://local.project.com/images/pokemon/".basename($filename));
-        $pokemon->setTeam($team);
-        
-        $this->em->persist($pokemon);
-        $this->em->flush();
-        
-        return $pokemon;
+        return $result;
     }
     
     public function removePokemon($pokemon): bool

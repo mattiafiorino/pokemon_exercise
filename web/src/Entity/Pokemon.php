@@ -36,7 +36,7 @@ class Pokemon
 
     /**
      * @ORM\ManyToOne(targetEntity=Team::class, inversedBy="pokemon")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
     private $team;
 

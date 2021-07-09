@@ -1,22 +1,70 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Team Creation{% endblock %}</title>
-        {# Run `composer require symfony/webpack-encore-bundle`
-           and uncomment the following Encore helpers to start using Symfony UX #}
-        {% block stylesheets %}
-            {#{{ encore_entry_link_tags('app') }}#}
-        {% endblock %}
+{% extends 'base.html.twig' %}
 
-        {% block javascripts %}
-            {#{{ encore_entry_script_tags('app') }}#}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}
-		<p>Welcome Adventurer!</p>
-		<p>Please build your team and start fighting</p>
-	{% endblock %}
-    </body>
-</html>
+{% block body %}
+    <div class="container">
+	<h3>
+	{% if team %}
+	Update
+	{% else %}
+	Create 
+	{% endif %}
+	your team</h3>
+	<p>Welcome Adventurer!</p>
+	<p>Please build your team and start fighting</p>
+
+	{% if team %}
+	<form action="/team/list">
+	{% else %}
+	<form action="#">
+	{% endif %}
+		<div class="form-group">
+			<p>
+			<input type="hidden" id="pokemonList">
+
+			<label for="teamName">Team Name</label>
+			{% if team %}
+				<input type="hidden" id="teamUpdate" value="{{team.id}}"/>
+				<input type="text" class="form-control" id="teamName" value="{{team.name}}"/>
+			{% else %}
+				<input type="text" class="form-control" id="teamName"/>
+			{% endif %}
+			<button type="button" class="btn btn-secondary" onclick="getNewPokemon();">Gotta catch 'em all!</button>
+			<div class="row row-cols-1 row-cols-md-4 g-4" id="pokemonCards">
+				{% if team %}
+					{% for pokemon in team.pokemon %}
+						<div class="col">
+							<div class="card h-100" style="width: 17rem;">
+					  			<img src="{{pokemon.imagePath}}" class="card-img-top" alt="{{pokemon.name}}">
+					  			<div class="card-body">
+					    				<h5 class="card-title"><b>{{pokemon.name}}</b></h5>
+					    				<p class="card-text"><b>Base Experience</b> : {{pokemon.baseExp}}</p>		
+									<p class="card-text"><b>Abilities</b> :
+										<ul>
+										{% for ability in pokemon.abilities %}
+											<li>{{ability.name}}</li>
+										{% endfor %}
+										</ul>
+									</p>
+					  			</div>
+					  			<div class="card-footer">
+								{% for type in pokemon.types %}
+									<img src="/images/types/{{type.name}}.png" style="float:right; width:40px; height:40px;"/>
+								{% endfor %}
+								</div>
+							</div>
+				   		</div>
+					{% endfor %}
+				{% endif %}
+			</div>
+			</p>
+			<p>
+				<button type="submit" class="btn btn-primary" onclick="return doSubmit();">Save Team</button>
+			</p>
+		</div>
+
+	</form>
+    </div>
+{% endblock %}
+{% block custom_js %}
+    <script src="{{ asset('js/create.js') }}"></script>
+{% endblock %}

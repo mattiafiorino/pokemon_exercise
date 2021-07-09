@@ -1,22 +1,74 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Team Creation{% endblock %}</title>
-        {# Run `composer require symfony/webpack-encore-bundle`
-           and uncomment the following Encore helpers to start using Symfony UX #}
-        {% block stylesheets %}
-            {#{{ encore_entry_link_tags('app') }}#}
-        {% endblock %}
+{% extends 'base.html.twig' %}
 
-        {% block javascripts %}
-            {#{{ encore_entry_script_tags('app') }}#}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}
-		<p>Welcome Adventurer!</p>
-		<p>Please build your team and start fighting</p>
-	{% endblock %}
-    </body>
-</html>
+{% block body %}
+<div class="container">
+    <h3>Team List</h3>
+    <p>Welcome Adventurer!</p>
+    <p>Here you can find the list of all your teams</p>
+    <p>
+	<h4>Filter the team list by pokemon type</h4>
+	<h5>(Empty filter means no filter applied)</h5>
+	<div class="btn-group" role="group" aria-label="Pokemon types filter">
+	  {% for type in type_list %}
+	  <input type="checkbox" class="btn-check" id="check_{{type.name}}" name="{{type.name}}" autocomplete="off">
+	  <label class="btn btn-outline-primary" for="check_{{type.name}}">
+		<img src="{{ asset('images/types/' ~ type.name ~ '.png') }}" style="float:right; width:32px; height:32px;"/>
+	  </label>
+	  {% endfor %}
+	</div>
+    </p>
+    {% for team in team_list %}
+	<p>
+	<div class="card" id="{{team.id}}">
+	  <input type="hidden" name="teams[]" value="{{team.id}}">
+	  <div class="card-header">
+	    <p class="h4">
+	        {{team.name}}
+		<!-- Button trigger modal -->
+		<button type="button" class="btn btn-danger modalButton" style="float:right;" data-href="/team/{{team.id}}/delete" data-toggle="modal" data-target="#confirm-delete">
+		  Delete
+		</button>
+		<!-- <a class="btn btn-danger" style="float:right;" href="/team/{{team.id}}/delete" role="button">Delete</a> -->
+	        <a class="btn btn-primary" style="float:right; margin-right:15px;" href="/team/{{team.id}}/update" role="button">Update</a>		
+	    </p>
+	  </div>
+	  <div class="card-body">
+	      {% for image in team.images %}
+                  <img src="{{image}}">
+	      {% endfor %}
+	  </div>
+	  <div class="card-footer text-muted">
+	      Total base experience: {{ team.tot_exp }} 
+
+	       {% for type in team.types %}
+		  <img src="{{ asset('images/types/' ~ type ~ '.png') }}" style="float:right; width:40px; height:40px;"/>
+		  <input type="hidden" name="type[{{team.id}}][]" value="{{type}}">
+	       {% endfor %}
+
+	  </div>
+	</div>
+	</p>
+    {% endfor %}
+	<!-- Modal -->
+	<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+	    <div class="modal-dialog">
+		<div class="modal-content">
+		    <div class="modal-header">
+		        <h5 class="modal-title" id="staticBackdropLabel">Team Delete</h5>
+		    </div>
+		    <div class="modal-body">
+		        <p>Are you sure you want to delete this team?</p>
+			<p>Remember that a team once deleted can't be restored!</p>
+		    </div>
+		    <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+		        <a class="btn btn-danger btn-ok" href="/team/list">Delete</a>
+		    </div>
+		</div>
+	    </div>
+	</div>
+</div>
+{% endblock %}
+{% block custom_js %}
+    <script src="{{ asset('js/list.js') }}"></script>
+{% endblock %}
